@@ -1,17 +1,22 @@
+using GiveMeMovie;
 using GiveMeMovie.Services.ApiHelper.Implementations;
 using GiveMeMovie.Services.ApiHelper.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//var config = new ConfigurationBuilder()
+//    .AddJsonFile("appsettings.json", optional: false)
+//    .Build();
 
+var options = new TMDBOptions();
+builder.Configuration.GetSection("TMDB").Bind(options);
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient("externalApiClient", client =>
 {
-    client.BaseAddress = new Uri("https://api.themoviedb.org/3");
+    client.BaseAddress = new Uri(options.BaseUrl);
     client.DefaultRequestHeaders.Add("Accept", "application/json");
-    client.DefaultRequestHeaders.Add("Authorization",
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmZjZmZTVjMmYwZWVkNjBhMzVlNTNhNjQ2YWUxNDJjMyIsInN1YiI6IjVmZTBjNTY0MWIxNTdkMDA0MWM3OWE5YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MZFR89Ma_9cyScbAbmqLFzYx1ZsrgV7AG2RMa2QPZuA");
+    client.DefaultRequestHeaders.Add("Authorization",options.ApiKey);
 });
 builder.Services.AddSingleton<IGetMovieChangesList, GetMovieChangesList>();
 
